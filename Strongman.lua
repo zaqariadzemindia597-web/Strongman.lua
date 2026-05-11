@@ -1,51 +1,57 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("💪 Strongman MOBILE - MOD MENU", "Midnight")
+local Window = Library.CreateLib("💪 Strongman ULTRA: SUPERHERO UPDATE", "Midnight")
 
--- FARMING TAB
+-- MAIN FARMING
 local Farm = Window:NewTab("Farming")
-local FarmSection = Farm:NewSection("Strength & Workout")
+local Section = Farm:NewSection("Strength & Workout")
 
-FarmSection:NewToggle("Workout 50x (Strength Farm)", "უზარმაზარი ძალა წამებში", function(state)
+-- 1. Workout 50x (Strength Farm)
+Section:NewToggle("Auto Workout 50x", "სწრაფი ძალის მომატება", function(state)
     _G.Workout = state
     spawn(function()
         while _G.Workout do
-            for i = 1, 50 do
-                if not _G.Workout then break end
-                game:GetService("ReplicatedStorage").Events.Train:FireServer()
+            -- პირდაპირი წვდომა ვარჯიშის ივენთზე
+            local remote = game:GetService("ReplicatedStorage"):FindFirstChild("TrainFacility", true) or 
+                           game:GetService("ReplicatedStorage"):FindFirstChild("Train", true)
+            
+            if remote then
+                for i = 1, 50 do
+                    if not _G.Workout then break end
+                    remote:FireServer()
+                end
             end
             task.wait(0.01)
         end
     end)
 end)
 
--- EGGS TAB
+-- 2. Superhero Egg Opener
 local Eggs = Window:NewTab("Auto Eggs")
-local EggSection = Eggs:NewSection("Last Map Egg Opener")
+local EggSection = Eggs:NewSection("Superhero Map Gacha")
 
-EggSection:NewToggle("Auto Open Last Egg", "ხსნის ბოლო მაპის კვერცხებს", function(state)
+EggSection:NewToggle("Open Superhero Eggs", "ავტომატურად ხსნის Superhero კვერცხს", function(state)
     _G.AutoEgg = state
     spawn(function()
         while _G.AutoEgg do
-            local eggFolder = workspace:FindFirstChild("Eggs")
-            if eggFolder then
-                local eggList = eggFolder:GetChildren()
-                local lastEgg = eggList[#eggList].Name -- პოულობს ბოლო კვერცხს სიაში
-                game:GetService("ReplicatedStorage").Events.PurchaseEgg:FireServer(lastEgg)
+            local remote = game:GetService("ReplicatedStorage"):FindFirstChild("PurchaseEgg", true)
+            if remote then
+                -- აქ ვიყენებთ შენს მიერ მოწოდებულ სახელს "Superhero"
+                remote:FireServer("Superhero")
             end
-            task.wait(0.1)
+            task.wait(0.2)
         end
     end)
 end)
 
 -- PLAYER SETTINGS
 local Settings = Window:NewTab("Settings")
-local SSection = Settings:NewSection("Player Boosts")
+local SSection = Settings:NewSection("Movement & AFK")
 
 SSection:NewSlider("WalkSpeed", "სირბილის სიჩქარე", 300, 16, function(s)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
 end)
 
-SSection:NewButton("Anti-AFK", "თამაშიდან არ გამოგაგდებს", function()
+SSection:NewButton("Anti-AFK", "ჩართე რომ არ გაგაგდოს", function()
     local vu = game:GetService("VirtualUser")
     game:GetService("Players").LocalPlayer.Idled:Connect(function()
         vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
@@ -53,3 +59,5 @@ SSection:NewButton("Anti-AFK", "თამაშიდან არ გამო�
         vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
     end)
 end)
+
+print("Superhero სკრიპტი წარმატებით ჩაიტვირთა!")
